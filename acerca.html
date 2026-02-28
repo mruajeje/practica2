@@ -11,34 +11,36 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap">
     
-    <link rel="stylesheet" href="./css/fontello.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 <body>
 
     <header class="main-header">
-        <div class="logo-container">
-            <a href="index.html" class="logo-link">
-                <img src="./img/logo.png" alt="Logotipo Web" class="logo-img">
-            </a>
-            <div class="site-info">
-                <h1 class="site-title">PlanB</h1>
-                <p class="site-subtitle">Tu alternativa al sofá</p>
+        <div class="header-top">
+            <div class="logo-container">
+                <a href="index.html" class="logo-link">
+                    <img src="./img/logo.png" alt="Logotipo Web" class="logo-img">
+                </a>
+                <div class="site-info">
+                    <h1 class="site-title">PlanB</h1>
+                </div>
             </div>
+
+            <label for="menu-toggle" class="menu-button">
+                <i class="fa-solid fa-bars"></i>
+            </label>
         </div>
 
         <input type="checkbox" id="menu-toggle" class="menu-checkbox">
-        <label for="menu-toggle" class="menu-button">
-            <i class="icon-menu"></i> Menú
-        </label>
 
         <nav class="main-nav">
             <ul>
-                <li><a href="index.html"><i class="icon-home"></i> Inicio</a></li>
-                <li><a href="buscar.html"><i class="icon-search"></i> Buscar</a></li>
-                <li><a href="login.html"><i class="icon-user"></i> Login</a></li>
-                <li><a href="index.html"><i class="icon-logout"></i> Logout</a></li>
-                <li><a href="registrar.html"><i class="icon-user-plus"></i> Crear cuenta</a></li>
-                <li><a href="nueva.html"><i class="icon-plus"></i> Nueva</a></li>
+                <li><a href="index.html"><i class="fa-solid fa-house"></i> Inicio</a></li>
+                <li><a href="buscar.html"><i class="fa-solid fa-magnifying-glass"></i> Buscar</a></li>
+                <li><a href="login.html"><i class="fa-solid fa-user"></i> Login</a></li>
+                <li><a href="index.html"><i class="fa-solid fa-right-from-bracket"></i> Logout</a></li>
+                <li><a href="registrar.html"><i class="fa-solid fa-user-plus"></i> Crear cuenta</a></li>
+                <li><a href="nueva.html"><i class="fa-solid fa-plus"></i> Nueva</a></li>
             </ul>
         </nav>
     </header>
@@ -49,7 +51,7 @@
     </main>
 
     <footer class="main-footer">
-        <p>&copy; 2026 Nombre del Sitio. Todos los derechos reservados.</p>
+        <p>&copy; 2026 PlanB. Todos los derechos reservados.</p>
         <p>
             <a href="acerca.html">Información de contacto y Acerca de</a>
         </p>
