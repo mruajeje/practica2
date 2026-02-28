@@ -45,9 +45,78 @@
         </nav>
     </header>
 
-    <main>
-        <h2>Página Maestra</h2>
-        <p>Este contenido se reemplaza en cada archivo.</p>
+    <main class="register-page">
+        <div class="form-container">
+            <h2>Crear cuenta</h2>
+            <p>Únete a PlanB y empieza a proponer actividades.</p>
+
+            <form action="#" method="post" class="auth-form">
+                <div class="form-group">
+                    <label for="username">Usuario *</label>
+                    <input type="text" id="username" name="username" 
+                        required autofocus
+                        minlength="4" maxlength="20"
+                        pattern="^[a-zA-Z][a-zA-Z0-9]{3,19}$"
+                        title="De 4 a 20 caracteres, solo letras y números. No puede empezar por un número."
+                        placeholder="Nombre de usuario">
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email *</label>
+                    <input type="email" id="email" name="email" required placeholder="Correo electrónico">
+                </div>
+
+                <div class="form-group password-wrapper">
+                    <label for="password">Contraseña *</label>
+                    <div class="input-with-btn">
+                        <input type="password" id="password" name="password" 
+                            required 
+                            minlength="5" maxlength="20"
+                            pattern="[a-zA-Z0-9_\-\.]+"
+                            title="De 5 a 20 caracteres. Solo letras, números y los caracteres _ - ."
+                            placeholder="••••••••">
+                        <button type="button" class="toggle-password" title="Mostrar/Ocultar">
+                            <i class="fa-solid fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="form-group password-wrapper">
+                    <label for="password-confirm">Confirmar Contraseña</label>
+                    <div class="input-with-btn">
+                        <input type="password" id="password-confirm" name="password-confirm" placeholder="••••••••">
+                        <button type="button" class="toggle-password" title="Mostrar/Ocultar">
+                            <i class="fa-solid fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="form-group profile-photo-section">
+                    <label>Foto de usuario</label>
+                    <div class="photo-preview-container">
+                        <img src="./img/usuarioRegistro.png" alt="Previsualización" id="photo-preview" class="user-img-preview">
+                    </div>
+                    <div class="photo-actions">
+                        <input type="file" id="user-photo" name="user-photo" accept="image/*" hidden>
+                        <button type="button" class="btn-photo" onclick="document.getElementById('user-photo').click()">
+                            <i class="fa-solid fa-upload"></i> Cargar
+                        </button>
+                        <button type="button" class="btn-photo btn-remove" id="remove-photo">
+                            <i class="fa-solid fa-trash"></i> Eliminar
+                        </button>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="reset" class="btn-secondary">Limpiar</button>
+                    <button type="submit" class="btn-primary">Registrar</button>
+                </div>
+            </form>
+
+            <div class="form-footer">
+                ¿Ya tienes cuenta? <a href="login.html" class="link-highlight">Inicia sesión aquí</a>
+            </div>
+        </div>
     </main>
 
     <footer class="main-footer">
