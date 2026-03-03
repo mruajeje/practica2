@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
-    <title>Título de tu Web</title>
+    <title>PlanB - Actividades</title>
     
     <link rel="stylesheet" href="./css/styles.css">
     
@@ -46,8 +46,134 @@
     </header>
 
     <main>
-        <h2>Página Maestra</h2>
-        <p>Este contenido se reemplaza en cada archivo.</p>
+        <h2>Dos días de esquí en Sierra Nevada</h2>
+        <p>.</p>
+        <section class="activity-description">
+            <h3>Descripción de la experiencia</h3>
+            <p>
+                Disfruta de un fin de semana inolvidable en las cumbres de Sierra Nevada. 
+                Este pack de dos días incluye forfait completo para acceder a todos los remontes, 
+                alquiler de equipo de esquí o snowboard de alta gama y dos noches de alojamiento 
+                en un hotel a pie de pista con desayuno incluido.
+            </p>
+            <p>
+                Tanto si eres principiante como experto, podrás disfrutar de más de 100 km de pistas 
+                bajo el sol de Andalucía. Al finalizar la jornada, relájate en el spa del hotel 
+                o disfruta del mejor ambiente après-ski en la plaza de Pradollano. 
+                ¡La nieve te espera!
+            </p>
+            <p><strong>Nivel:</strong> Todos los niveles (Clases de iniciación opcionales).</p>
+        </section>
+        <div class="activity-meta-links">
+                <p class="meta-item">
+                    <i class="fa-solid fa-user"></i> Creado por: 
+                    <a href="buscar.html" class="highlight-link">Aventurero99</a>
+                </p>
+                <p class="meta-item">
+                    <i class="fa-solid fa-location-dot"></i> Lugar: 
+                    <a href="buscar.html" class="highlight-link">Sierra de Aitana</a>
+                </p>
+                <p class="meta-item">
+                    <i class="fa-solid fa-tag"></i> Categoría: 
+                    <a href="buscar.html" class="highlight-link">Aire Libre</a>
+                </p>
+                <p class="meta-item">
+                    <i class="fa-regular fa-calendar"></i> Publicado: 8 de enero de 2026
+                </p>
+                <div class="rating-badge">
+                    Valoración: ⭐⭐⭐⭐⭐ (5/5)
+                </div>
+            </div>
+        </header>
+
+        <hr class="divider">
+        <section class="activity-gallery">
+            <h3>Galería de Fotos</h3>
+            
+            <div class="photo-viewer">
+                <a href="./img/actividad1.jpg" class="zoom-link">
+                    <img src="./img/actividad1.jpg" alt="Vistas desde la cima" class="main-photo">
+                </a>
+                <p class="photo-caption">FOTO: Vistas espectaculares desde la cima al amanecer.</p>
+            </div>
+
+            <div class="gallery-nav">
+                <button type="button" class="btn-secondary">
+                    <i class="fa-solid fa-chevron-left"></i> Anterior
+                </button>
+                <span class="photo-counter">Foto 1 de 5</span>
+                <button type="button" class="btn-secondary">
+                    Siguiente <i class="fa-solid fa-chevron-right"></i>
+                </button>
+            </div>
+        </section>
+
+        <section class="comments-section">
+            <h3>Comentarios de usuarios (2)</h3>
+
+            <div class="comments-list">
+                
+                <article class="comment">
+                    <div class="comment-header">
+                        <div class="user-avatar-placeholder">
+                            <i class="fa-solid fa-user"></i>
+                        </div>
+                        <div class="comment-meta">
+                            <span class="comment-author">MariaG</span>
+                            <span class="comment-date">16 de enero de 2026, a las 11:36</span>
+                        </div>
+                    </div>
+                    <div class="comment-body">
+                        <p>¡Una experiencia increíble! El guía fue muy profesional y las vistas no tienen precio. Repetiré seguro.</p>
+                    </div>
+                    <div class="comment-rating">Valoración: 5/5 ⭐⭐⭐⭐⭐</div>
+                </article>
+
+                <article class="comment">
+                    <div class="comment-header">
+                        <div class="user-avatar-placeholder">
+                            <i class="fa-solid fa-user"></i>
+                        </div>
+                        <div class="comment-meta">
+                            <span class="comment-author">Pedro_Hiking</span>
+                            <span class="comment-date">18 de enero de 2026, a las 09:15</span>
+                        </div>
+                    </div>
+                    <div class="comment-body">
+                        <p>Muy buena escapada de fin de semana, aunque se me hizo un poco larga al final. Llevad mucha agua.</p>
+                    </div>
+                    <div class="comment-rating">Valoración: 4/5 ⭐⭐⭐⭐</div>
+                </article>
+            </div>
+
+            <hr class="divider">
+
+            <div class="login-warning">
+                <i class="fa-solid fa-circle-info"></i>
+                <p>Para poder dejar un comentario tienes que <a href="login.html">iniciar sesión</a>.</p>
+            </div>
+
+            <div class="add-comment-form">
+                <h4>Deja tu comentario</h4>
+                <form action="#" method="POST">
+                    <div class="form-group full-width">
+                        <label for="comment-text">Tu opinión (máx 250 caracteres):</label>
+                        <textarea id="comment-text" name="comment" maxlength="250" rows="4" placeholder="Cuéntanos tu experiencia..."></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="rating-input">Valoración (1-5):</label>
+                        <input type="number" id="rating-input" name="rating" min="1" max="5" value="5">
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="reset" class="btn-secondary">Limpiar</button>
+                        <button type="submit" class="btn-primary">Enviar comentario</button>
+                    </div>
+                </form>
+            </div>
+
+        </section>
     </main>
 
     <footer class="main-footer">
