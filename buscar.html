@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
-    <title>Título de tu Web</title>
+    <title>PlanB - Buscar</title>
     
     <link rel="stylesheet" href="./css/styles.css">
     
@@ -45,9 +45,157 @@
         </nav>
     </header>
 
-    <main>
-        <h2>Página Maestra</h2>
-        <p>Este contenido se reemplaza en cada archivo.</p>
+    <main class="search-page">
+        
+        <section class="search-container">
+            <h2>Buscar Actividades</h2>
+            
+            <form action="#" class="search-form">
+                <div class="form-group full-width">
+                    <label for="keywords">Palabra clave:</label>
+                    <input type="text" id="keywords" name="q" placeholder="Ej: Senderismo, Playa, Taller...">
+                </div>
+
+                <div class="filters-row">
+                    <div class="form-group">
+                        <label for="category">Categoría:</label>
+                        <select id="category" name="category">
+                            <option value="">Todas las categorías</option>
+                            <option value="aire-libre">Aire Libre</option>
+                            <option value="gastronomia">Gastronomía</option>
+                            <option value="cultura">Cultura</option>
+                            <option value="deporte">Deporte</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="location">Ubicación:</label>
+                        <input type="text" id="location" name="location" placeholder="Ciudad o zona">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="author">Creado por:</label>
+                        <input type="text" id="author" name="author" placeholder="Nombre de usuario">
+                    </div>
+                </div>
+
+                <fieldset class="rating-range">
+                    <legend>Valoración (estrellas):</legend>
+                    <div class="range-inputs">
+                        <label>Desde: <input type="number" name="min_rate" min="1" max="5" value="1"></label>
+                        <label>Hasta: <input type="number" name="max_rate" min="1" max="5" value="5"></label>
+                    </div>
+                </fieldset>
+
+                <button type="submit" class="btn-primary search-btn">
+                    <i class="fa-solid fa-magnifying-glass"></i> Buscar
+                </button>
+            </form>
+        </section>
+
+        <hr class="divider">
+
+        <section class="results-container">
+            <h3>Resultados de la búsqueda</h3>
+            
+            <div class="activities-grid">
+                
+                <article class="activity-card">
+                    <a href="actividad.html" class="img-link">
+                        <img src="./img/actividad1.jpg" alt="Ruta de senderismo" class="activity-img">
+                    </a>
+                    <div class="activity-info">
+                        <h3 class="activity-title" title="Dos días de esquí en Sierra Nevada">
+                            <a href="actividad.html">Dos días de esquí en Sierra Nevada</a>
+                        </h3>
+                        <div class="activity-meta">
+                            <p class="date">Fecha de creación: 27 de enero de 2026</p>
+                            <p class="location"><i class="fa-solid fa-location-dot"></i> Sierra Nevada</p>
+                            <p class="author"><i class="fa-solid fa-user"></i> JuanPerez99</p>
+                        </div>
+                        <div class="activity-rating">
+                            <p>Valoración: ⭐⭐⭐⭐⭐(4.7/5)</p>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="activity-card">
+                    <a href="actividad.html" class="img-link">
+                        <img src="./img/actividad3.jpg" alt="Ruta de senderismo" class="activity-img">
+                    </a>
+                    <div class="activity-info">
+                        <h3 class="activity-title" title="Ruta de senderismo de alta montaña con vivac">
+                            <a href="actividad.html">Ruta de senderismo de alta montaña con vivac</a>
+                        </h3>
+                        <div class="activity-meta">
+                            <p class="date">Fecha de creación: 8 de enero de 2026</p>
+                            <p class="location"><i class="fa-solid fa-location-dot"></i> Sierra de Aitana</p>
+                            <p class="author"><i class="fa-solid fa-user"></i> DanoninoGonzalez</p>
+                        </div>
+                        <div class="activity-rating">
+                            <p>Valoración: ⭐⭐⭐⭐ (4/5)</p>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="activity-card">
+                    <a href="actividad.html" class="img-link">
+                        <img src="./img/actividad3.jpg" alt="Via lactea" class="activity-img">
+                    </a>
+                    <div class="activity-info">
+                        <h3 class="activity-title" title="Ruta fotográfica nocturna para capturar la Vía Láctea">
+                            <a href="actividad.html">Ruta fotográfica nocturna para capturar la Vía Láctea</a>
+                        </h3>
+                        <div class="activity-meta">
+                            <p class="date">Fecha de creación: 19 de marzo de 2025</p>
+                            <p class="location"><i class="fa-solid fa-location-dot"></i> La Mata, Torrevieja</p>
+                            <p class="author"><i class="fa-solid fa-user"></i> aritin</p>
+                        </div>
+                        <div class="activity-rating">
+                            <p>Valoración: ⭐⭐⭐⭐ (4/5)</p>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="activity-card">
+                    <a href="actividad.html" class="img-link">
+                        <img src="./img/actividad4.jpg" alt="Surf en la orilla" class="activity-img">
+                    </a>
+                    <div class="activity-info">
+                        <h3 class="activity-title" title="Clase intensiva de paddle surf al amanecer">
+                            <a href="actividad.html">Clase intensiva de paddle surf al amanecer</a>
+                        </h3>
+                        <div class="activity-meta">
+                            <p class="date">Fecha de creación: 8 de mayo de 2025</p>
+                            <p class="location"><i class="fa-solid fa-location-dot"></i> Playa de San Juan</p>
+                            <p class="author"><i class="fa-solid fa-user"></i> mruajeje</p>
+                        </div>
+                        <div class="activity-rating">
+                            <p>Valoración: ⭐⭐⭐⭐⭐ (5/5)</p>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="activity-card">
+                    <a href="actividad.html" class="img-link">
+                        <img src="./img/actividad5.jpg" alt="Yoga" class="activity-img">
+                    </a>
+                    <div class="activity-info">
+                        <h3 class="activity-title" title="Sesión de yoga al atardecer y picnic">
+                            <a href="actividad.html">Sesión de yoga al atardecer y picnic</a>
+                        </h3>
+                        <div class="activity-meta">
+                            <p class="date">Fecha de creación: 6 de abril de 2025</p>
+                            <p class="location"><i class="fa-solid fa-location-dot"></i> Parque Natural</p>
+                            <p class="author"><i class="fa-solid fa-user"></i> RespiraNatura</p>
+                        </div>
+                        <div class="activity-rating">
+                            <p>Valoración: ⭐⭐⭐⭐ (4/5)</p>
+                        </div>
+                    </div>
+                </article>
+            </div>
+        </section>
     </main>
 
     <footer class="main-footer">
