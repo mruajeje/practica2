@@ -73,7 +73,13 @@
                     <a href="buscar.html" class="highlight-link">Aire Libre</a>
                 </p>
                 <div class="rating-badge">
-                    Valoración: ⭐⭐⭐⭐⭐ (5/5)
+                    Valoración: 
+                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-solid fa-star"></i>
+                        (5/5)</p>
                 </div>
             </div>
         </header>
@@ -117,7 +123,14 @@
                     <div class="comment-body">
                         <p>¡Una experiencia increíble! El guía fue muy profesional.</p>
                     </div>
-                    <div class="comment-rating">Valoración: 5/5 ⭐⭐⭐⭐⭐</div>
+                    <div class="comment-rating">Valoración: 
+                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-solid fa-star"></i>
+                        (5/5)
+                    </div>
                 </article>
 
                 <article class="comment">
@@ -133,7 +146,13 @@
                     <div class="comment-body">
                         <p>Muy buena ruta, aunque se me hizo un poco larga al final.</p>
                     </div>
-                    <div class="comment-rating">Valoración: 4/5 ⭐⭐⭐⭐</div>
+                    <div class="comment-rating">Valoración: 
+                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-solid fa-star"></i>
+                        (4/5)
+                    </div>
                 </article>
             </div>
 
@@ -147,11 +166,36 @@
             <div class="add-comment-form">
                 <h4>Deja tu comentario</h4>
                 <form action="#" method="POST">
+                    
+                    <div class="form-group rating-group">
+                        <label>Tu valoración:</label>
+                        <div class="star-rating">
+                            <input type="radio" id="star5" name="rating" value="5" required />
+                            <label for="star5" title="5 estrellas"><i class="fa-solid fa-star"></i></label>
+                            
+                            <input type="radio" id="star4" name="rating" value="4" />
+                            <label for="star4" title="4 estrellas"><i class="fa-solid fa-star"></i></label>
+                            
+                            <input type="radio" id="star3" name="rating" value="3" />
+                            <label for="star3" title="3 estrellas"><i class="fa-solid fa-star"></i></label>
+                            
+                            <input type="radio" id="star2" name="rating" value="2" />
+                            <label for="star2" title="2 estrellas"><i class="fa-solid fa-star"></i></label>
+                            
+                            <input type="radio" id="star1" name="rating" value="1" />
+                            <label for="star1" title="1 estrella"><i class="fa-solid fa-star"></i></label>
+                        </div>
+                    </div>
+
                     <div class="form-group full-width">
                         <label for="comment-text">Tu opinión (máx 250 caracteres):</label>
-                        <textarea id="comment-text" name="comment" maxlength="250" rows="4"></textarea>
+                        <textarea id="comment-text" name="comment" maxlength="250" rows="4" required></textarea>
                     </div>
-                    <button type="submit">Enviar comentario</button>
+
+                    <div class="form-actions">
+                        <button type="reset" class="btn-secondary">Limpiar</button>
+                        <button type="submit" class="btn-primary">Enviar comentario</button>
+                    </div>
                 </form>
             </div>
 
