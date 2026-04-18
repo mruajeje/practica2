@@ -115,43 +115,55 @@ window.onload = async () => {
     const formulario = document.getElementById('form-comentario');
     if (formulario) {
         formulario.onsubmit = async (e) => {
-            e.preventDefault(); // Evitamos que la página se recargue
+        e.preventDefault();
 
-            // Recogemos los datos del formulario
-            const texto = document.getElementById('comment-text').value;
-            const valoracion = formulario.querySelector('input[name="rating"]:checked')?.value;
+        const texto = document.getElementById('comment-text').value;
+        const valoracion = formulario.querySelector('input[name="rating"]:checked')?.value;
 
-            if (!valoracion) {
-                alert("Por favor, selecciona una puntuación con las estrellas.");
-                return;
-            }
+        if (!valoracion) {
+            // Nota: El enunciado prohíbe alert() para mensajes finales, 
+            // pero puedes usarlo para validación previa si no tienes un modal de error.
+            alert("Selecciona una valoración");
+            return;
+        }
 
-            // Preparamos los datos para enviar (según lo que pida tu API)
-            const datosEnviar = new URLSearchParams();
-            datosEnviar.append('id_actividad', idActividad);
-            datosEnviar.append('texto', texto);
-            datosEnviar.append('valoracion', valoracion);
+        const datosEnviar = new URLSearchParams();
+        datosEnviar.append('texto', texto); // Parámetro requerido [cite: 321]
+        datosEnviar.append('valoracion', valoracion); // Parámetro requerido [cite: 322]
 
-            try {
-                const response = await fetch(`api/actividades/${idActividad}/comentarios`, {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': token // IMPORTANTE: Enviamos el token para identificarnos
-                    },
-                    body: datosEnviar
-                });
+        try {
+            // La URL debe incluir el ID de la actividad 
+            const response = await fetch(`api/actividades/${idActividad}/comentarios`, {
+                method: 'POST',
+                headers: {
+                    // Es obligatorio el formato "Bearer {TOKEN}" 
+                    'Authorization': `Bearer ${token}` 
+                },
+                body: datosEnviar
+            });
 
-                const resultado = await response.json();
+            const resultado = await response.json();
 
-                if (resultado.RESULTADO === 'OK') {
-                    alert("¡Comentario enviado con éxito!");
-                    location.reload(); // Recargamos para que aparezca tu nuevo comentario
-                } else {
-                    alert("Error al enviar: " + resultado.DESCRIPCION);
+            if (resultado.RESULTADO === 'OK') {
+                // 1. Limpiar formulario [cite: 138]
+                formulario.reset();
+                
+                // 2. Mostrar mensaje modal (No alert) 
+                mostrarModal("Éxito", "Comentario guardado correctamente.");
+
+                // 3. Actualizar lista de comentarios sin recargar la página [cite: 136]
+                // Llamamos a la función que ya tienes para pedir comentarios
+                const resCom = await fetch(`api/actividades/${idActividad}/comentarios`);
+                const dataCom = await resCom.json();
+                if (dataCom.RESULTADO === 'OK') {
+                    pintarComentarios(dataCom.FILAS);
                 }
-            } catch (error) {
-                console.error("Error en la petición POST:", error);
+            } else {
+                mostrarModal("Error", resultado.DESCRIPCION);
             }
-        };
+        } catch (error) {
+            console.error("Error en la petición POST:", error);
+        }
+    };
     }
 };
