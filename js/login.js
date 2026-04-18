@@ -1,28 +1,23 @@
 document.addEventListener('DOMContentLoaded', () => {
     
     // 1. COMPROBAR SI YA ESTÁ LOGUEADO
-    // Si ya hay un token (en session o local), no pinta nada en la página de login
     const tokenSession = sessionStorage.getItem('token');
     const tokenLocal = localStorage.getItem('token');
     
     if (tokenSession || tokenLocal) {
         window.location.href = 'index.html';
-        return; // Detenemos la ejecución del script
+        return; 
     }
 
     // 2. REFERENCIAS AL DOM
     const loginForm = document.querySelector('.auth-form');
-    
-    // Referencias al Modal
     const modal = document.getElementById('modal-mensaje');
     const modalTitulo = document.getElementById('modal-titulo');
     const modalTexto = document.getElementById('modal-texto');
     const modalBtnCerrar = document.getElementById('modal-btn-cerrar');
     
-    // Variable para saber si debemos redirigir al cerrar el modal
     let redirigirAlCerrar = false; 
 
-    // Función auxiliar para mostrar el modal
     function mostrarModal(titulo, texto, redirigir = false) {
         modalTitulo.textContent = titulo;
         modalTexto.textContent = texto;
@@ -30,14 +25,13 @@ document.addEventListener('DOMContentLoaded', () => {
         modal.style.display = 'flex';
     }
 
-    // Evento para cerrar el modal
     modalBtnCerrar.addEventListener('click', () => {
         modal.style.display = 'none';
         if (redirigirAlCerrar) {
             window.location.href = 'index.html';
         } else {
-            // Si es un error, devolvemos el foco al campo login como pide el PDF
-            document.getElementById('login').focus();
+            const loginInput = document.getElementById('login');
+            if(loginInput) loginInput.focus();
         }
     });
 
@@ -47,9 +41,12 @@ document.addEventListener('DOMContentLoaded', () => {
         // 1. Capturamos los datos limpios
         const valLogin = document.getElementById('login').value;
         const valPwd = document.getElementById('pwd').value;
-        const checkRecordar = document.querySelector('input[name="recordar"]').checked;
+        
+        // Validación segura del checkbox
+        const checkboxEl = document.querySelector('input[name="recordar"]');
+        const checkRecordar = checkboxEl ? checkboxEl.checked : false;
 
-        // 2. Preparamos el formato exacto que pide el profesor
+        // 2. Preparamos el formato exacto que pide el servidor
         const dataForPHP = new URLSearchParams();
         dataForPHP.append('login', valLogin);
         dataForPHP.append('pwd', valPwd);
@@ -58,7 +55,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         try {
-            // 3. Petición con la cabecera correcta (¡Aquí ya no habrá línea roja!)
+            // 3. Petición con la cabecera correcta
             const response = await fetch('api/usuarios/login', {
                 method: 'POST',
                 headers: {
@@ -68,9 +65,8 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             const data = await response.json();
-
-
             console.log("RESPUESTA DEL SERVIDOR:", data);
+
             // 4. Gestionamos el resultado
             if (data.RESULTADO === 'OK') {
                 sessionStorage.clear();
@@ -91,7 +87,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         } catch (error) {
             mostrarModal('Error', 'No se pudo conectar con el servidor.', false);
-            console.error(error);
+            console.error("Error capturado:", error);
         }
     });
 });
