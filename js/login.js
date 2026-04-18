@@ -1,3 +1,4 @@
+window.onload = () => {    
     // 1. COMPROBAR SI YA ESTÁ LOGUEADO
     const tokenSession = sessionStorage.getItem('token');
     const tokenLocal = localStorage.getItem('token');
@@ -88,3 +89,4 @@
             console.error("Error capturado:", error);
         }
     });
+};

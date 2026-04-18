@@ -40,133 +40,30 @@
     </header>
 
     <main class="activity-detail-page">
-        
-        <header class="activity-header">
-            <h2>Dos días de esquí en Sierra Nevada</h2>
-
-            <section class="activity-description">
-                <h3>Descripción de la experiencia</h3>
-                <p>
-                    Disfruta de una ruta inolvidable por los picos más altos de la provincia. 
-                    La actividad incluye guía titulado, seguro de accidentes y material de vivac. 
-                    Saldremos al amanecer para aprovechar las horas de luz y disfrutar de unas vistas espectaculares.
-                </p>
-                <p>
-                    <strong>Nivel de dificultad:</strong> Medio-Alto. Se requiere buena forma física.
-                </p>
-            </section>
-            
-            <div class="activity-meta-links">
-                <p class="meta-item">
-                    <i class="fa-solid fa-user"></i> Creado por: 
-                    <a href="buscar.html" class="highlight-link">JuanPerez99</a>
-                </p>
-                <p class="meta-item">
-                    <i class="fa-solid fa-location-dot"></i> Lugar: 
-                    <a href="buscar.html" class="highlight-link">Sierra Nevada</a>
-                </p>
-                <p class="meta-item">
-                    <i class="fa-regular fa-calendar"></i> Publicado: 27 de enero de 2026
-                </p>
-                <p class="meta-item">
-                    <i class="fa-solid fa-tag"></i> Categoría: 
-                    <a href="buscar.html" class="highlight-link">Aire Libre</a>
-                </p>
-                <div class="rating-badge">
-                    Valoración: 
-                        <i class="fa-solid fa-star"></i>
-                        <i class="fa-solid fa-star"></i>
-                        <i class="fa-solid fa-star"></i>
-                        <i class="fa-solid fa-star"></i>
-                        <i class="fa-solid fa-star"></i>
-                        (5/5)</p>
-                </div>
-            </div>
-        </header>
+        <header class="activity-header" id="contenedor-detalles">
+            </header>
 
         <br><br>
-        <section class="activity-gallery">
+        <section class="activity-gallery" id="contenedor-galeria">
             <h3>Galería de Fotos</h3>
-            
-            <div class="photo-viewer">
-                <a href="./img/actividad1.jpg" class="zoom-link">
-                    <img src="./img/actividad1.jpg" alt="Vistas desde la cima" class="main-photo">
-                </a>
-                <p class="photo-caption">FOTO: Vistas espectaculares desde la cima al amanecer.</p>
-            </div>
-
-            <div class="gallery-nav">
-                <button type="button" class="btn-secondary">
-                    <i class="fa-solid fa-chevron-left"></i> Anterior
-                </button>
-                <span class="photo-counter">Foto 1 de 5</span>
-                <button type="button" class="btn-secondary">
-                    Siguiente <i class="fa-solid fa-chevron-right"></i>
-                </button>
-            </div>
-        </section>
+            </section>
 
         <section class="comments-section">
-            <h3>Comentarios de usuarios (2)</h3>
+            <h3 id="titulo-comentarios">Comentarios de usuarios</h3>
 
-            <div class="comments-list">
-                <article class="comment">
-                    <div class="comment-header">
-                        <div class="user-avatar-placeholder">
-                            <i class="fa-solid fa-user"></i>
-                        </div>
-                        <div class="comment-meta">
-                            <span class="comment-author">MariaG</span>
-                            <span class="comment-date">16 de enero de 2026, a las 11:36</span>
-                        </div>
-                    </div>
-                    <div class="comment-body">
-                        <p>¡Una experiencia increíble! El guía fue muy profesional.</p>
-                    </div>
-                    <div class="comment-rating">Valoración: 
-                        <i class="fa-solid fa-star"></i>
-                        <i class="fa-solid fa-star"></i>
-                        <i class="fa-solid fa-star"></i>
-                        <i class="fa-solid fa-star"></i>
-                        <i class="fa-solid fa-star"></i>
-                        (5/5)
-                    </div>
-                </article>
-
-                <article class="comment">
-                    <div class="comment-header">
-                        <div class="user-avatar-placeholder">
-                            <i class="fa-solid fa-user"></i>
-                        </div>
-                        <div class="comment-meta">
-                            <span class="comment-author">Pedro_Hiking</span>
-                            <span class="comment-date">18 de enero de 2026, a las 19:13</span>
-                        </div>
-                    </div>
-                    <div class="comment-body">
-                        <p>Muy buena ruta, aunque se me hizo un poco larga al final.</p>
-                    </div>
-                    <div class="comment-rating">Valoración: 
-                        <i class="fa-solid fa-star"></i>
-                        <i class="fa-solid fa-star"></i>
-                        <i class="fa-solid fa-star"></i>
-                        <i class="fa-solid fa-star"></i>
-                        (4/5)
-                    </div>
-                </article>
-            </div>
+            <div class="comments-list" id="contenedor-lista-comentarios">
+                </div>
 
             <hr class="divider">
 
-            <div class="login-warning">
+            <div id="zona-aviso-login" class="login-warning" style="display: none;">
                 <i class="fa-solid fa-circle-info"></i>
                 <p>Para poder dejar un comentario tienes que <a href="login.html">iniciar sesión</a>.</p>
             </div>
 
-            <div class="add-comment-form">
+            <div id="zona-formulario-comentario" class="add-comment-form" style="display: none;">
                 <h4>Deja tu comentario</h4>
-                <form action="#" method="POST">
-                    
+                <form id="form-comentario" action="#" method="POST">
                     <div class="form-group rating-group">
                         <label>Tu valoración:</label>
                         <div class="star-rating">
@@ -198,14 +95,23 @@
                     </div>
                 </form>
             </div>
-
         </section>
     </main>
+
+    <div id="modal-mensaje" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <h3 id="modal-titulo">Atención</h3>
+            <p id="modal-texto">Mensaje</p>
+            <button id="modal-btn-cerrar" class="btn-primary">Aceptar</button>
+        </div>
+    </div>
 
     <footer class="main-footer">
         <p>&copy; 2026 PlanB. Todos los derechos reservados.</p>
         <p><a href="acerca.html">Información de contacto y Acerca de</a></p>
     </footer>
+    
+    <script src="./js/actividad.js"></script>
     <script src="./js/logout.js"></script>
 </body>
 </html>
