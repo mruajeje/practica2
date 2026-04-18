@@ -41,31 +41,43 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // 3. EVENTO SUBMIT DEL FORMULARIO
     loginForm.addEventListener('submit', async (e) => {
-        e.preventDefault(); // Evitamos que el formulario cambie de página
+        e.preventDefault(); // Evitamos recargar la página
 
-        const formData = new FormData(loginForm);
+        // 1. EXTRACCIÓN BRUTAL DE DATOS (Campo por campo)
+        const valLogin = document.getElementById('login').value;
+        const valPwd = document.getElementById('pwd').value;
+        const checkRecordar = document.querySelector('input[name="recordar"]').checked;
+
+        // Comprobación visual en consola
+        console.log("=== DATOS CAPTURADOS ===");
+        console.log("Login:", valLogin);
+        console.log("Pwd:", valPwd);
+        console.log("Recordar:", checkRecordar);
+
+        // 2. EMPAQUETADO PARA PHP (URLSearchParams puro)
+        const dataForPHP = new URLSearchParams();
+        dataForPHP.append('login', valLogin);
+        dataForPHP.append('pwd', valPwd);
+        if (checkRecordar) {
+            dataForPHP.append('recordar', 'on');
+        }
 
         try {
-            // Hacemos la petición a la API
+            // 3. ENVÍO AL SERVIDOR
             const response = await fetch('api/usuarios/login', {
                 method: 'POST',
-                body: formData // Enviamos login, pwd y recordar (si está marcado)
+                body: dataForPHP 
             });
 
-            // Parseamos el JSON que nos devuelve el PHP
             const data = await response.json();
 
-            // Comprobamos la respuesta según el enunciado
+            // 4. GESTIÓN DE LA RESPUESTA
             if (data.RESULTADO === 'OK') {
-                
-                // Limpiamos ambos storages por si acaso
                 sessionStorage.clear();
                 localStorage.clear();
 
-                // Decidimos dónde guardar en función del checkbox "recordar"
-                if (formData.has('recordar')) {
+                if (checkRecordar) {
                     localStorage.setItem('token', data.TOKEN);
                     localStorage.setItem('usuario', data.LOGIN);
                 } else {
@@ -73,17 +85,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     sessionStorage.setItem('usuario', data.LOGIN);
                 }
 
-                // Mostramos mensaje de éxito y pedimos redirigir
                 mostrarModal('Login Correcto', '¡Bienvenido, ' + data.LOGIN + '!', true);
-
             } else {
-                // El servidor devolvió un error (ej: contraseña incorrecta)
                 mostrarModal('Error de Login', data.DESCRIPCION, false);
             }
 
         } catch (error) {
-            mostrarModal('Error de Conexión', 'No se pudo contactar con el servidor. Verifica que XAMPP está encendido.', false);
+            mostrarModal('Error Fatal', 'El servidor no responde. ¿Está Apache encendido en XAMPP?', false);
             console.error('Error de fetch:', error);
         }
     });
-});
