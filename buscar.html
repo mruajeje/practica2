@@ -1,18 +1,20 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
+
     <title>PlanB - Buscar</title>
-    
+
     <link rel="stylesheet" href="./css/styles.css">
-    
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap">
-    
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
+
 <body>
 
     <header class="main-header">
@@ -49,7 +51,7 @@
     <main class="search-page">
         <section class="search-container">
             <h2>Buscar Actividades</h2>
-            
+
             <form id="form-busqueda" class="search-form">
                 <div class="form-group full-width">
                     <label for="filtro-texto">Palabra clave:</label>
@@ -59,9 +61,10 @@
                 <div class="filters-row">
                     <div class="form-group">
                         <label for="filtro-categoria">Categoría:</label>
-                        <input type="text" id="filtro-categoria" name="c" list="sugerencias-categorias" placeholder="Selecciona...">
+                        <input type="text" id="filtro-categoria" name="c" list="sugerencias-categorias"
+                            placeholder="Selecciona...">
                         <datalist id="sugerencias-categorias">
-                            </datalist>
+                        </datalist>
                     </div>
 
                     <div class="form-group">
@@ -78,8 +81,10 @@
                 <fieldset class="rating-range">
                     <legend>Valoración (estrellas):</legend>
                     <div class="range-inputs">
-                        <label>Desde: <input type="number" id="filtro-val-min" name="vd" min="1" max="5" value="1"></label>
-                        <label>Hasta: <input type="number" id="filtro-val-max" name="vh" min="1" max="5" value="5"></label>
+                        <label>Desde: <input type="number" id="filtro-val-min" name="vd" min="1" max="5"
+                                value="1"></label>
+                        <label>Hasta: <input type="number" id="filtro-val-max" name="vh" min="1" max="5"
+                                value="5"></label>
                     </div>
                 </fieldset>
 
@@ -94,9 +99,13 @@
         <section class="results-section">
             <h3 id="mensaje-resultados">Resultados de búsqueda</h3>
             <div class="activities-grid" id="contenedor-actividades">
-                </div>
-        </section>
+            </div>
+            <div class="load-more-container" style="text-align: center; margin-top: 20px;">
+                <p id="info-paginacion" style="margin-bottom: 10px; font-weight: bold;"></p>
+                <button id="btn-mostrar-mas" class="btn-primary" type="button" style="display: none;">Mostrar más</button>
+            </div>
     </main>
+        </section>
 
     <footer class="main-footer">
         <p>&copy; 2026 PlanB. Todos los derechos reservados.</p>
@@ -104,7 +113,8 @@
             <a href="acerca.html">Información de contacto y Acerca de</a>
         </p>
     </footer>
-    <script src="./js/buscar.js"></script>
+    <script src="./js/buscar.js?v=999"></script>
     <script src="./js/logout.js"></script>
 </body>
+
 </html>

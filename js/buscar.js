@@ -1,77 +1,111 @@
 window.onload = async () => {
+    // 1. GESTIÓN DEL MENÚ (Consistencia visual)
+    const token = sessionStorage.getItem('token') || localStorage.getItem('token');
+    // ... (Aquí puedes mantener tu lógica de menús del index.js)
+
+    // 2. REFERENCIAS AL DOM
     const form = document.getElementById('form-busqueda');
     const contenedor = document.getElementById('contenedor-actividades');
+    const infoPaginacion = document.getElementById('info-paginacion');
+    const btnMostrarMas = document.getElementById('btn-mostrar-mas');
+    
+    // Filtros del formulario
+    const inputTexto = document.getElementById('filtro-texto');
+    const inputLugar = document.getElementById('filtro-lugar');
+    const inputAutor = document.getElementById('filtro-autor');
+    const inputCategoria = document.getElementById('filtro-categoria');
 
-    // Función principal para pedir datos a XAMPP
-    async function realizarBusqueda() {
-        const t = document.getElementById('filtro-texto')?.value || '';
-        const l = document.getElementById('filtro-lugar')?.value || '';
-        const a = document.getElementById('filtro-autor')?.value || '';
-        const c = document.getElementById('filtro-categoria')?.value || '';
+    // Variables de estado
+    let registroActual = 0;
+    const cantidadPorPagina = 6;
+    let totalActividades = 0;
 
-        let url = 'api/actividades?';
-        if (t) url += `t=${t}&`;
-        if (l) url += `l=${l}&`;
-        if (a) url += `a=${a}&`;
-        if (c) url += `c=${c}&`;
+    // 3. LECTOR DE URL (Requisito 8.a) [cite: 141-146]
+    const paramsURL = new URLSearchParams(window.location.search);
+    if (paramsURL.has('lugar') && inputLugar) inputLugar.value = paramsURL.get('lugar');
+    if (paramsURL.has('autor') && inputAutor) inputAutor.value = paramsURL.get('autor');
+    if (paramsURL.has('categoria') && inputCategoria) inputCategoria.value = paramsURL.get('categoria');
+
+    // 4. FUNCIÓN DE CARGA Y BÚSQUEDA (Requisito 8.b y 151) [cite: 147-151]
+    async function cargarActividades(reset = false) {
+        if (reset) {
+            registroActual = 0;
+            contenedor.innerHTML = '<p>Buscando...</p>'; 
+        }
+
+        const t = inputTexto?.value.trim() || '';
+        const l = inputLugar?.value.trim() || '';
+        const a = inputAutor?.value.trim() || '';
+        const c = inputCategoria?.value.trim() || '';
+
+        // Usamos la ruta física para asegurar la conexión en tu servidor
+        let url = `api/get/actividades.php?reg=${registroActual}&cant=${cantidadPorPagina}`;
+        if (t) url += `&t=${encodeURIComponent(t)}`;
+        if (l) url += `&l=${encodeURIComponent(l)}`;
+        if (a) url += `&a=${encodeURIComponent(a)}`;
+        if (c) url += `&c=${encodeURIComponent(c)}`;
 
         try {
-            const res = await fetch(url);
-            const data = await res.json();
+            const response = await fetch(url);
+            const data = await response.json();
 
             if (data.RESULTADO === 'OK') {
-                pintar(data.FILAS);
+                if (reset) contenedor.innerHTML = '';
+                totalActividades = data.TOTAL_COINCIDENCIAS;
+                
+                if (totalActividades === 0 && reset) {
+                    contenedor.innerHTML = '<p>No se han encontrado resultados para esta búsqueda.</p>';
+                } else {
+                    renderizarActividades(data.FILAS);
+                    registroActual += data.FILAS.length;
+                }
+                actualizarInterfazPaginacion();
             }
         } catch (error) {
-            console.error("Error al conectar con la base de datos:", error);
+            console.error("Error:", error);
+            contenedor.innerHTML = '<p>Hubo un problema al conectar con el servidor.</p>';
         }
     }
 
-    function pintar(filas) {
-        contenedor.innerHTML = ''; // ESTO BORRA LO ANTIGUO
-        
-        if (filas.length === 0) {
-            contenedor.innerHTML = '<p>No se han encontrado actividades reales.</p>';
-            return;
+    function renderizarActividades(actividades) {
+        actividades.forEach(act => {
+            const card = document.createElement('article');
+            card.className = 'activity-card';
+            card.innerHTML = `
+                <a href="actividad.html?id=${act.id}">
+                    <img src="./fotos/actividades/${act.foto}" class="activity-img">
+                </a>
+                <div class="activity-info">
+                    <h3><a href="actividad.html?id=${act.id}">${act.nombre}</a></h3>
+                    <p><i class="fa-solid fa-location-dot"></i> ${act.lugar}</p>
+                    <p><i class="fa-solid fa-user"></i> ${act.autor}</p>
+                </div>`;
+            contenedor.appendChild(card);
+        });
+    }
+
+    function actualizarInterfazPaginacion() {
+        if(infoPaginacion) infoPaginacion.textContent = `Mostrando ${registroActual} de ${totalActividades} resultados`;
+        if(btnMostrarMas) {
+            btnMostrarMas.style.display = (registroActual < totalActividades) ? 'inline-block' : 'none';
+            btnMostrarMas.disabled = false;
         }
-
-            filas.forEach(act => {
-                contenedor.innerHTML += `
-                    <article class="activity-card">
-                        <a href="actividad.html?id=${act.id}">
-                            <img src="./fotos/actividades/${act.foto}" class="activity-img">
-                        </a>
-                        <div class="activity-info">
-                            <h3><a href="actividad.html?id=${act.id}">${act.nombre}</a></h3>
-                            <p><i class="fa-solid fa-location-dot"></i> ${act.lugar}</p>
-                            <p><i class="fa-solid fa-user"></i> ${act.autor}</p>
-                        </div>
-                    </article>`;
-            });
     }
 
-    // Escuchar el botón de buscar
-    if (form) {
-        form.onsubmit = (e) => {
-            e.preventDefault();
-            realizarBusqueda();
-        };
-    }
+    // EVENTOS
+    if(btnMostrarMas) btnMostrarMas.onclick = () => cargarActividades();
+    if(form) form.onsubmit = (e) => { e.preventDefault(); cargarActividades(true); };
 
-    // Al cargar la página, mostrar todas las actividades por defecto
-    realizarBusqueda();
+    // Carga inicial (lee la URL o muestra todo)
+    cargarActividades(true);
 
-    // Petición de todas las categorías guardadas (Punto 9.a) [cite: 153]
+    // 5. CARGAR CATEGORÍAS (Requisito 9.a) [cite: 153]
     try {
-        const resCat = await fetch('api/categorias');
+        const resCat = await fetch('api/get/categorias.php');
         const dataCat = await resCat.json();
         if (dataCat.RESULTADO === 'OK') {
             const dl = document.getElementById('sugerencias-categorias');
-            dataCat.FILAS.forEach(cat => {
-                dl.innerHTML += `<option value="${cat.nombre}">`; // [cite: 156]
-            });
+            dataCat.FILAS.forEach(cat => dl.innerHTML += `<option value="${cat.nombre}">`);
         }
-    } catch (e) {
-        console.error("Error cargando categorías:", e);
-    }
+    } catch (e) { console.error(e); }
 };
