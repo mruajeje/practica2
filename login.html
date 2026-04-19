@@ -1,18 +1,20 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
+
     <title>Título de tu Web</title>
-    
+
     <link rel="stylesheet" href="./css/styles.css">
-    
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap">
-    
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
+
 <body>
 
     <header class="main-header">
@@ -57,9 +59,14 @@
                     <input type="text" id="login" name="login" required autofocus placeholder="Tu usuario">
                 </div>
 
-                <div class="form-group">
+                <div class="form-group" style="position: relative;">
                     <label for="pwd">Contraseña:</label>
-                    <input type="password" id="pwd" name="pwd" required placeholder="••••••••">
+                    <input type="password" id="pwd" name="pwd" required placeholder="Tu contraseña">
+
+                    <button type="button" class="toggle-password"
+                        style="position: absolute; right: 10px; bottom: 8px; background: none; border: none; cursor: pointer; color: #666;">
+                        <i class="fa-solid fa-eye-slash"></i>
+                    </button>
                 </div>
 
                 <div class="form-options">
@@ -98,4 +105,5 @@
     <script src="./js/login.js"></script>
     <script src="./js/logout.js"></script>
 </body>
+
 </html>

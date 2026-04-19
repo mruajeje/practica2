@@ -1,68 +1,84 @@
-window.onload = async () => {
-    // 1. Protección de acceso (Punto 152)
-    const token = sessionStorage.getItem('token') || localStorage.getItem('token');
-    if (!token) { window.location.href = 'index.html'; return; }
+window.onload = function() {
+    // 1. PROTECCIÓN DE ACCESO (Punto 2.c)
+    var token = sessionStorage.getItem('token') || localStorage.getItem('token');
+    if (!token) { 
+        window.location.href = 'index.html'; 
+        return; 
+    }
 
-    let categorias = [];
-    let fotosSeleccionadas = []; // Array de { archivo: File, desc: String }
+    var categoriasAsignadas = [];
+    var fotosSeleccionadas = []; // Array de objetos { archivo: File, desc: String }
 
-    // 2. Cargar datalist (Punto 153)
-    try {
-        const res = await fetch('api/categorias');
-        const data = await res.json();
-        if (data.RESULTADO === 'OK') {
-            const dl = document.getElementById('existing-categories');
-            data.FILAS.forEach(c => dl.innerHTML += `<option value="${c.nombre}">`);
-        }
-    } catch (e) { console.error(e); }
+    // 2. CARGAR DATALIST DE CATEGORÍAS (Punto 9.a)
+    fetch('api/categorias')
+        .then(function(res) { return res.json(); })
+        .then(function(data) {
+            if (data.RESULTADO === 'OK') {
+                var dl = document.getElementById('existing-categories');
+                data.FILAS.forEach(function(c) {
+                    dl.innerHTML += '<option value="' + c.nombre + '">';
+                });
+            }
+        });
 
-    // 3. Gestión de Categorías (Punto 157)
-    document.getElementById('btn-add-tag').onclick = () => {
-        const input = document.getElementById('category-input');
-        const val = input.value.trim();
-        if (val && !categorias.includes(val)) {
-            categorias.push(val);
-            renderTags();
-            input.value = '';
-        }
-    };
+    // 3. GESTIÓN DE CATEGORÍAS (Punto 9.b)
+    var btnAddTag = document.getElementById('btn-add-tag');
+    if (btnAddTag) {
+        btnAddTag.onclick = function() {
+            var input = document.getElementById('category-input');
+            var val = input.value.trim();
+            if (val && categoriasAsignadas.indexOf(val) === -1) {
+                categoriasAsignadas.push(val);
+                renderTags();
+                input.value = '';
+            }
+        };
+    }
 
     function renderTags() {
-        const container = document.getElementById('assigned-tags-container');
-        container.innerHTML = categorias.map((c, i) => `
-            <span class="tag">${c} <button type="button" onclick="eliminarTag(${i})">&times;</button></span>
-        `).join('');
+        var container = document.getElementById('assigned-tags-container');
+        container.innerHTML = '';
+        categoriasAsignadas.forEach(function(c, i) {
+            var span = document.createElement('span');
+            span.className = 'tag';
+            span.innerHTML = c + ' <button type="button" onclick="eliminarTag(' + i + ')">&times;</button>';
+            container.appendChild(span);
+        });
     }
-    window.eliminarTag = (i) => { categorias.splice(i, 1); renderTags(); };
 
-    // 4. Gestión de Fotos (Punto 161, 162)
-    const inputFile = document.getElementById('subir-ficha');
-    const previewImg = document.getElementById('img-temp-preview');
+    window.eliminarTag = function(i) {
+        categoriasAsignadas.splice(i, 1);
+        renderTags();
+    };
 
-    document.getElementById('btn-seleccionar').onclick = () => inputFile.click();
-    document.getElementById('preview-box').onclick = () => inputFile.click();
+    // 4. GESTIÓN DE FOTOS (Puntos 9.c)
+    var inputFile = document.getElementById('subir-ficha');
+    var previewImg = document.getElementById('img-temp-preview');
+    var btnSeleccionar = document.getElementById('btn-seleccionar');
 
-    inputFile.onchange = (e) => {
-        const file = e.target.files[0];
+    if (btnSeleccionar) btnSeleccionar.onclick = function() { inputFile.click(); };
+
+    inputFile.onchange = function(e) {
+        var file = e.target.files[0];
         if (file) {
-            if (file.size > 200 * 1024) { // Límite 200KB
+            if (file.size > 200 * 1024) { // Límite 200KB 
                 mostrarModal("Error de tamaño", "La foto no puede superar los 200KB.");
-                e.target.value = '';
+                inputFile.value = '';
                 previewImg.src = 'img/ficha.png';
                 return;
             }
-            const reader = new FileReader();
-            reader.onload = (ev) => previewImg.src = ev.target.result;
+            var reader = new FileReader();
+            reader.onload = function(ev) { previewImg.src = ev.target.result; };
             reader.readAsDataURL(file);
         }
     };
 
-    document.getElementById('btn-confirmar-foto').onclick = () => {
-        const desc = document.getElementById('foto-desc-temp').value.trim();
+    document.getElementById('btn-confirmar-foto').onclick = function() {
+        var desc = document.getElementById('foto-desc-temp').value.trim();
         if (inputFile.files.length > 0 && desc !== "") {
             fotosSeleccionadas.push({ archivo: inputFile.files[0], desc: desc });
             renderFotos();
-            // Limpiar ficha
+            // Limpiar ficha de entrada
             document.getElementById('foto-desc-temp').value = '';
             inputFile.value = '';
             previewImg.src = 'img/ficha.png';
@@ -70,55 +86,71 @@ window.onload = async () => {
     };
 
     function renderFotos() {
-        const list = document.getElementById('added-photos-list');
-        list.innerHTML = fotosSeleccionadas.map((f, i) => `
-            <article class="photo-item">
-                <img src="${URL.createObjectURL(f.archivo)}" alt="Foto">
-                <p>${f.desc}</p>
-                <button type="button" class="btn-delete" onclick="eliminarFoto(${i})"><i class="fas fa-trash"></i> Eliminar</button>
-            </article>
-        `).join('');
+        var list = document.getElementById('added-photos-list');
+        list.innerHTML = '';
+        fotosSeleccionadas.forEach(function(f, i) {
+            var item = document.createElement('article');
+            item.className = 'photo-item';
+            // Usamos URL.createObjectURL para previsualizar sin cargar al servidor todavía
+            var urlTemp = URL.createObjectURL(f.archivo);
+            item.innerHTML = 
+                '<img src="' + urlTemp + '" alt="Foto">' +
+                '<p>' + f.desc + '</p>' +
+                '<button type="button" class="btn-delete" onclick="eliminarFoto(' + i + ')">Eliminar</button>';
+            list.appendChild(item);
+        });
     }
-    window.eliminarFoto = (i) => { fotosSeleccionadas.splice(i, 1); renderFotos(); };
 
-    // 5. Envío Final (Punto 178)
-    document.getElementById('form-nueva-actividad').onsubmit = async (e) => {
+    window.eliminarFoto = function(i) {
+        fotosSeleccionadas.splice(i, 1);
+        renderFotos();
+    };
+
+    // 5. ENVÍO FINAL (Punto 9.d)
+    var form = document.getElementById('form-nueva-actividad');
+    form.onsubmit = function(e) {
         e.preventDefault();
 
-        if (fotosSeleccionadas.length === 0) {
+        if (fotosSeleccionadas.length === 0) { // Requisito 176 [cite: 176]
             mostrarModal("Error", "Debes añadir al menos una foto.");
             return;
         }
 
-        const fd = new FormData(e.target);
-        // Añadir arrays según Punto 182, 189, 190
-        categorias.forEach(c => fd.append('categorias[]', c));
-        // Busca este bloque y cámbialo por este para asegurar el envío del fichero
-        fotosSeleccionadas.forEach((f, index) => {
-            // Añadimos el tercer parámetro (f.archivo.name) para que PHP lo reconozca como FILE
+        var fd = new FormData(form);
+        
+        // Añadir categorías al array (Punto 182) [cite: 182]
+        categoriasAsignadas.forEach(function(c) {
+            fd.append('categorias[]', c);
+        });
+
+        // Añadir fotos y descripciones (Puntos 189, 190) [cite: 189, 190]
+        fotosSeleccionadas.forEach(function(f) {
             fd.append('fotos[]', f.archivo, f.archivo.name); 
             fd.append('descripciones[]', f.desc);
         });
 
-        try {
-            const res = await fetch('api/actividades', {
-                method: 'POST',
-                headers: { 'Authorization': `Bearer ${token}` },
-                body: fd
-            });
-            const data = await res.json();
+        fetch('api/actividades', {
+            method: 'POST',
+            headers: { 'Authorization': 'Bearer ' + token }, // Requisito 193 
+            body: fd
+        })
+        .then(function(res) { return res.json(); })
+        .then(function(data) {
             if (data.RESULTADO === 'OK') {
-                mostrarModal("Actividad guardada", `Se ha creado: ${data.NOMBRE}`);
-                document.getElementById('modal-btn-cerrar').onclick = () => window.location.href = 'index.html';
+                mostrarModal("Actividad guardada", "Se ha creado correctamente: " + data.NOMBRE);
+                document.getElementById('modal-btn-cerrar').onclick = function() {
+                    window.location.href = 'index.html';
+                };
             }
-        } catch (err) { console.error(err); }
+        })
+        .catch(function(err) { console.error("Error al enviar:", err); });
     };
 
     function mostrarModal(titulo, texto) {
         document.getElementById('modal-titulo').textContent = titulo;
         document.getElementById('modal-texto').textContent = texto;
         document.getElementById('modal-mensaje').style.display = 'flex';
-        document.getElementById('modal-btn-cerrar').onclick = () => {
+        document.getElementById('modal-btn-cerrar').onclick = function() {
             document.getElementById('modal-mensaje').style.display = 'none';
         };
     }

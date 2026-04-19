@@ -1,103 +1,102 @@
-window.onload = () => {
-    const tokenSession = sessionStorage.getItem('token');
-    const tokenLocal = localStorage.getItem('token');
-    const token = tokenSession || tokenLocal;
+window.onload = function() {
+    // 1. GESTIÓN DE SESIÓN Y MENÚ
+    var token = sessionStorage.getItem('token') || localStorage.getItem('token');
 
-    const btnLogin = document.querySelector('a[href="login.html"]')?.parentElement;
-    const btnRegistro = document.querySelector('a[href="registrar.html"]')?.parentElement;
-    const btnNueva = document.querySelector('a[href="nueva.html"]')?.parentElement;
+    // Buscamos los elementos del menú por su enlace
+    var liLogin = document.querySelector('a[href="login.html"]');
+    var liRegistro = document.querySelector('a[href="registrar.html"]');
+    var liNueva = document.querySelector('a[href="nueva.html"]');
     
-    let btnLogout = null;
-    document.querySelectorAll('.main-nav a').forEach(link => {
-        if (link.textContent.trim() === 'Logout') btnLogout = link.parentElement;
-    });
-
-    if (token) {
-        if(btnLogin) btnLogin.style.display = 'none';
-        if(btnRegistro) btnRegistro.style.display = 'none';
-        if(btnLogout) btnLogout.style.display = 'block';
-        if(btnNueva) btnNueva.style.display = 'block';
-    } else {
-        if(btnLogin) btnLogin.style.display = 'block';
-        if(btnRegistro) btnRegistro.style.display = 'block';
-        if(btnLogout) btnLogout.style.display = 'none';
-        if(btnNueva) btnNueva.style.display = 'none';
+    // Para el Logout, buscamos el enlace que contenga el texto o la función
+    var enlaces = document.querySelectorAll('.main-nav a');
+    var liLogout = null;
+    for (var i = 0; i < enlaces.length; i++) {
+        if (enlaces[i].textContent.toLowerCase().includes('logout') || enlaces[i].getAttribute('onclick')) {
+            liLogout = enlaces[i].parentElement;
+        }
     }
 
-    const contenedor = document.getElementById('contenedor-actividades');
-    const infoPaginacion = document.getElementById('info-paginacion');
-    const btnMostrarMas = document.getElementById('btn-mostrar-mas');
+    if (token) {
+        if (liLogin) liLogin.parentElement.style.display = 'none';
+        if (liRegistro) liRegistro.parentElement.style.display = 'none';
+        if (liLogout) liLogout.style.display = 'block';
+        if (liNueva) liNueva.parentElement.style.display = 'block';
+    } else {
+        if (liLogin) liLogin.parentElement.style.display = 'block';
+        if (liRegistro) liRegistro.parentElement.style.display = 'block';
+        if (liLogout) liLogout.style.display = 'none';
+        if (liNueva) liNueva.parentElement.style.display = 'none';
+    }
+
+    // 2. CARGA DE ACTIVIDADES (Paginación)
+    var contenedor = document.getElementById('contenedor-actividades');
+    var infoPaginacion = document.getElementById('info-paginacion');
+    var btnMostrarMas = document.getElementById('btn-mostrar-mas');
     
-    let registroActual = 0;
-    const cantidadPorPagina = 6;
-    let totalActividades = 0;
+    var registroActual = 0;
+    var cantidadPorPagina = 6;
+    var totalActividades = 0;
 
-    async function cargarActividades(reset = false) {
-        if (reset) {
+    function cargarActividades(esInicio) {
+        if (esInicio) {
             registroActual = 0;
-            contenedor.innerHTML = ''; 
+            if (contenedor) contenedor.innerHTML = '';
         }
 
-        try {
-            // COMILLAS INVERTIDAS OBLIGATORIAS
-            const url = `api/get/actividades.php?reg=${registroActual}&cant=${cantidadPorPagina}`;
-            
-            const response = await fetch(url);
-            const data = await response.json();
+        var url = 'api/get/actividades.php?reg=' + registroActual + '&cant=' + cantidadPorPagina;
 
-            if (data.RESULTADO === 'OK') {
-                totalActividades = data.TOTAL_COINCIDENCIAS;
-                renderizarActividades(data.FILAS);
-                registroActual += data.FILAS.length;
-                actualizarInterfazPaginacion();
-            } else {
-                contenedor.innerHTML = '<p>No se han podido cargar las actividades.</p>';
-            }
-        } catch (error) {
-            console.error(error);
-            contenedor.innerHTML = `<p>Error de conexión: ${error.message}</p>`;
-        }
+        fetch(url)
+            .then(function(res) {
+                return res.json();
+            })
+            .then(function(data) {
+                if (data.RESULTADO === 'OK') {
+                    totalActividades = data.TOTAL_COINCIDENCIAS;
+                    renderizarActividades(data.FILAS);
+                    registroActual += data.FILAS.length;
+                    actualizarInterfazPaginacion();
+                }
+            })
+            .catch(function(err) {
+                console.error("Error al cargar actividades:", err);
+            });
     }
 
     function renderizarActividades(actividades) {
-        actividades.forEach(act => {
-            const card = document.createElement('article');
-            card.className = 'activity-card';
-            card.innerHTML = `
-                <a href="actividad.html?id=${act.id}" class="img-link">
-                    <img src="./fotos/actividades/${act.foto}" alt="${act.nombre}" class="activity-img">
-                </a>
-                <div class="activity-info">
-                    <h3 class="activity-title"><a href="actividad.html?id=${act.id}">${act.nombre}</a></h3>
-                </div>
-            `;
-            contenedor.appendChild(card);
+        if (!contenedor) return;
+        actividades.forEach(function(act) {
+            var article = document.createElement('article');
+            article.className = 'activity-card';
+            article.innerHTML = 
+                '<a href="actividad.html?id=' + act.id + '" class="img-link">' +
+                    '<img src="./fotos/actividades/' + act.foto + '" alt="' + act.nombre + '" class="activity-img">' +
+                '</a>' +
+                '<div class="activity-info">' +
+                    '<h3 class="activity-title"><a href="actividad.html?id=' + act.id + '">' + act.nombre + '</a></h3>' +
+                '</div>';
+            contenedor.appendChild(article);
         });
     }
 
     function actualizarInterfazPaginacion() {
-        if(infoPaginacion) {
-            infoPaginacion.textContent = `Mostrando ${registroActual} de ${totalActividades} actividades`;
+        if (infoPaginacion) {
+            infoPaginacion.textContent = 'Mostrando ' + registroActual + ' de ' + totalActividades + ' actividades';
         }
-        if(btnMostrarMas) {
-            if (registroActual >= totalActividades) {
-                btnMostrarMas.style.display = 'none';
-            } else {
-                btnMostrarMas.style.display = 'inline-block';
-                btnMostrarMas.disabled = false;
-            }
+        if (btnMostrarMas) {
+            btnMostrarMas.style.display = (registroActual < totalActividades) ? 'inline-block' : 'none';
+            btnMostrarMas.disabled = false;
+            btnMostrarMas.textContent = "Mostrar más";
         }
     }
 
-    if(btnMostrarMas) {
-        btnMostrarMas.onclick = () => {
-            btnMostrarMas.disabled = true; 
+    if (btnMostrarMas) {
+        btnMostrarMas.onclick = function() {
+            btnMostrarMas.disabled = true;
             btnMostrarMas.textContent = "Cargando...";
-            cargarActividades().then(() => {
-                btnMostrarMas.textContent = "Mostrar más";
-            });
+            cargarActividades(false);
         };
     }
 
+    // Lanzar carga inicial
     cargarActividades(true);
 };

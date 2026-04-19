@@ -1,110 +1,122 @@
-window.onload = () => {
-    const form = document.getElementById('form-registro');
-    const inputUser = document.getElementById('username');
-    const inputPhoto = document.getElementById('user-photo');
-    const photoPreview = document.getElementById('photo-preview');
+window.onload = function() {
+    var form = document.getElementById('form-registro');
+    var inputUser = document.getElementById('username');
+    var inputPhoto = document.getElementById('user-photo');
+    var photoPreview = document.getElementById('photo-preview');
 
-    // Lógica para mostrar/ocultar contraseña
-    document.querySelectorAll('.toggle-password').forEach(btn => {
-        btn.onclick = (e) => {
-            const input = e.currentTarget.parentElement.querySelector('input');
-            input.type = input.type === 'password' ? 'text' : 'password';
-            e.currentTarget.querySelector('i').classList.toggle('fa-eye-slash');
+    // --- LÓGICA DE MOSTRAR/OCULTAR CONTRASEÑA ---
+    var botonesToggle = document.querySelectorAll('.toggle-password');
+    botonesToggle.forEach(function(btn) {
+        btn.onclick = function(e) {
+            var input = e.currentTarget.parentElement.querySelector('input');
+            if (input.type === 'password') {
+                input.type = 'text';
+            } else {
+                input.type = 'password';
+            }
+            var icono = e.currentTarget.querySelector('i');
+            if (icono) icono.classList.toggle('fa-eye-slash');
         };
     });
 
-    // 1. COMPROBAR DISPONIBILIDAD (Punto 6.a)
-    inputUser.onblur = async () => {
-        const login = inputUser.value.trim();
-        if (login.length < 4) return;
+    // 1. COMPROBAR DISPONIBILIDAD DE LOGIN (Punto 6.a) - SIN ASYNC
+    if (inputUser) {
+        inputUser.onblur = function() {
+            var login = inputUser.value.trim();
+            if (login.length < 4) return;
 
-        try {
-            // Llamada directa al archivo GET pasando el parámetro _rec_ [cite: 115]
-            const res = await fetch(`api/get/usuarios.php?_rec_=${login}`);
-            const data = await res.json();
-            const errorMsg = document.getElementById('error-login');
+            // Llamada al endpoint de verificación
+            fetch('api/usuarios/' + login)
+                .then(function(res) { return res.json(); })
+                .then(function(data) {
+                    var errorMsg = document.getElementById('error-login');
+                    if (data.DISPONIBLE === false) {
+                        errorMsg.style.display = 'block';
+                        inputUser.style.borderColor = '#d9534f';
+                    } else {
+                        errorMsg.style.display = 'none';
+                        inputUser.style.borderColor = '';
+                    }
+                })
+                .catch(function(err) {
+                    console.error("Error al validar login:", err);
+                });
+        };
+    }
 
-            if (data.DISPONIBLE === false) {
-                errorMsg.style.display = 'block';
-                inputUser.style.borderColor = '#d9534f';
-            } else {
-                errorMsg.style.display = 'none';
-                inputUser.style.borderColor = '';
+    // 2. PREVISUALIZACIÓN DE FOTO (Punto 6.b)
+    if (inputPhoto) {
+        inputPhoto.onchange = function(e) {
+            var file = e.target.files[0];
+            if (file) {
+                var reader = new FileReader();
+                reader.onload = function(ev) {
+                    if (photoPreview) photoPreview.src = ev.target.result;
+                };
+                reader.readAsDataURL(file);
             }
-        } catch (e) { 
-            console.error("Error al validar usuario", e); 
-        }
-    };
+        };
+    }
 
-    // 2. GESTIÓN DE FOTO (Punto 6.c)
-    document.getElementById('btn-trigger-upload').onclick = () => inputPhoto.click();
-    document.getElementById('area-foto').onclick = () => inputPhoto.click();
+    // 3. ENVÍO DEL FORMULARIO DE REGISTRO
+    if (form) {
+        form.onsubmit = function(e) {
+            e.preventDefault();
 
-    inputPhoto.onchange = (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            if (file.size > 200 * 1024) { // Límite 200KB [cite: 115]
-                mostrarModal("Error", "La imagen no puede superar los 200KB.");
-                inputPhoto.value = '';
-                photoPreview.src = './img/usuarioRegistro.png';
+            var pwd = document.getElementById('password').value;
+            var pwdConfirm = document.getElementById('password-confirm').value;
+
+            // Validación de contraseñas iguales
+            if (pwd !== pwdConfirm) {
+                mostrarModal("Error de validación", "Las contraseñas no coinciden.");
                 return;
             }
-            const reader = new FileReader();
-            reader.onload = (ev) => photoPreview.src = ev.target.result;
-            reader.readAsDataURL(file);
-        }
-    };
 
-    document.getElementById('remove-photo').onclick = () => {
-        inputPhoto.value = '';
-        photoPreview.src = './img/usuarioRegistro.png';
-    };
+            var fd = new FormData(form);
 
-    // 3. ENVÍO DEL REGISTRO (Punto 6.d)
-    form.onsubmit = async (e) => {
-        e.preventDefault();
-
-        const p1 = document.getElementById('password').value;
-        const p2 = document.getElementById('password-confirm').value;
-
-        if (p1 !== p2) {
-            mostrarModal("Atención", "Las contraseñas no coinciden.");
-            return;
-        }
-
-        const fd = new FormData(form);
-
-        try {
-            // Llamada directa al archivo físico de registro [cite: 117]
-            const res = await fetch('api/post/usuarios/registro.php', {
-                method: 'POST', 
-                body: fd 
-            });
-            const data = await res.json();
-
-            if (data.RESULTADO === 'OK') {
-                if (data.ERROR_FOTO) {
-                    mostrarModal("Usuario creado, pero...", data.ERROR_FOTO);
-                } else {
-                    mostrarModal("Éxito", "Usuario y foto registrados correctamente.");
-                    document.getElementById('modal-btn-cerrar').onclick = () => {
+            // Petición POST de registro
+            fetch('api/usuarios', {
+                method: 'POST',
+                body: fd
+            })
+            .then(function(res) { return res.json(); })
+            .then(function(data) {
+                if (data.RESULTADO === 'OK') {
+                    // Si hay un error con la foto pero el usuario se creó (6.c)
+                    if (data.ERROR_FOTO) {
+                        mostrarModal("Usuario creado, pero...", data.ERROR_FOTO);
+                    } else {
+                        mostrarModal("Éxito", "Usuario registrado correctamente.");
+                    }
+                    
+                    // Al cerrar el modal, vamos al login
+                    document.getElementById('modal-btn-cerrar').onclick = function() {
                         window.location.href = 'login.html';
                     };
+                } else {
+                    mostrarModal("Error", data.DESCRIPCION || "Error en el registro.");
                 }
-            } else {
-                mostrarModal("Error", data.DESCRIPCION || "Error en el registro.");
-            }
-        } catch (err) {
-            mostrarModal("Error", "No se pudo conectar con el servidor.");
-        }
-    };
+            })
+            .catch(function(err) {
+                mostrarModal("Error", "No se pudo conectar con el servidor.");
+                console.error("Error en registro:", err);
+            });
+        };
+    }
 
     function mostrarModal(titulo, texto) {
-        document.getElementById('modal-titulo').innerText = titulo;
-        document.getElementById('modal-texto').innerText = texto;
-        document.getElementById('modal-registro').style.display = 'flex';
-        document.getElementById('modal-btn-cerrar').onclick = () => {
-            document.getElementById('modal-registro').style.display = 'none';
-        };
+        var modal = document.getElementById('modal-mensaje'); // Usa el ID de tu HTML
+        var mTitulo = document.getElementById('modal-titulo');
+        var mTexto = document.getElementById('modal-texto');
+        var mBtn = document.getElementById('modal-btn-cerrar');
+
+        if (modal && mTitulo && mTexto) {
+            mTitulo.textContent = titulo;
+            mTexto.textContent = texto;
+            modal.style.display = 'flex';
+            mBtn.onclick = function() {
+                modal.style.display = 'none';
+            };
+        }
     }
 };

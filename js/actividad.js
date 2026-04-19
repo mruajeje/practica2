@@ -2,6 +2,7 @@ window.onload = function() {
     var parametros = new URLSearchParams(window.location.search);
     var idActividad = parametros.get('id');
 
+    // 7.a: Comprobación de ID en la URL [cite: 108, 109]
     if (!idActividad || isNaN(idActividad)) {
         window.location.href = 'index.html';
         return;
@@ -11,33 +12,37 @@ window.onload = function() {
     var fotosActividad = [];
     var fotoActualIndex = 0;
 
-    // --- CADENA DE CARGA CON PROMESAS ---
+    // --- CADENA DE CARGA CON PROMESAS (Sin async/await) [cite: 7] ---
     fetch('api/actividades/' + idActividad)
         .then(function(res) { return res.json(); })
         .then(function(data) {
-            if (data.RESULTADO === 'OK') pintarDatosBasicos(data.FILAS[0]);
+            if (data.RESULTADO === 'OK') pintarDatosBasicos(data.FILAS[0]); // 7.b
             return fetch('api/actividades/' + idActividad + '/fotos');
         })
         .then(function(res) { return res.json(); })
         .then(function(data) {
             if (data.RESULTADO === 'OK') {
                 fotosActividad = data.FILAS;
-                actualizarVisorFoto();
+                actualizarVisorFoto(); // 7.c
             }
+            return fetch('api/actividades/' + idActividad + '/categorias');
+        })
+        .then(function(res) { return res.json(); })
+        .then(function(data) {
+            if (data.RESULTADO === 'OK') pintarCategorias(data.FILAS); // 7.d
             return fetch('api/actividades/' + idActividad + '/comentarios');
         })
         .then(function(res) { return res.json(); })
         .then(function(data) {
-            if (data.RESULTADO === 'OK') pintarComentarios(data.FILAS);
-            gestionarFormularioComentario();
+            if (data.RESULTADO === 'OK') pintarComentarios(data.FILAS); // 7.e
+            gestionarFormularioComentario(); // 7.f
         })
         .catch(function(err) { console.error("Error en la carga:", err); });
 
-    // --- FUNCIONES VISUALES ---
+    // --- FUNCIONES DE RENDERIZADO ---
 
     function pintarDatosBasicos(act) {
-        var header = document.getElementById('contenedor-detalles');
-        header.innerHTML = 
+        document.getElementById('contenedor-detalles').innerHTML = 
             '<h2 class="detail-title">' + act.nombre + '</h2>' +
             '<div class="detail-meta">' +
                 '<span><i class="fa-solid fa-location-dot"></i> ' + act.lugar + '</span>' +
@@ -49,18 +54,20 @@ window.onload = function() {
     function actualizarVisorFoto() {
         var contenedor = document.getElementById('contenedor-galeria');
         if (fotosActividad.length === 0) return;
-
         var foto = fotosActividad[fotoActualIndex];
+        
+        // 7.c: Carrusel (Solo una foto a la vez con descripción) [cite: 117]
         contenedor.innerHTML = 
+            '<h3>Galería de Fotos</h3>' +
             '<div class="carousel-card">' +
                 '<div class="image-wrapper">' +
                     '<img src="./fotos/actividades/' + foto.fichero + '" class="carousel-img-main">' +
                     '<div class="caption-overlay">' + foto.descripcion + '</div>' +
                 '</div>' +
                 '<div class="carousel-footer">' +
-                    '<button id="btn-ant" class="btn-nav"><i class="fa-solid fa-chevron-left"></i> Anterior</button>' +
-                    '<span class="step-indicator">Foto ' + (fotoActualIndex + 1) + ' de ' + fotosActividad.length + '</span>' +
-                    '<button id="btn-sig" class="btn-nav">Siguiente <i class="fa-solid fa-chevron-right"></i></button>' +
+                    '<button id="btn-ant" class="btn-nav">Anterior</button>' +
+                    '<span class="step-indicator">' + (fotoActualIndex + 1) + ' de ' + fotosActividad.length + '</span>' +
+                    '<button id="btn-sig" class="btn-nav">Siguiente</button>' +
                 '</div>' +
             '</div>';
 
@@ -71,62 +78,51 @@ window.onload = function() {
         document.getElementById('btn-sig').onclick = function() { fotoActualIndex++; actualizarVisorFoto(); };
     }
 
+    function pintarCategorias(cats) {
+        var lista = document.getElementById('lista-categorias');
+        if (!lista) return;
+        lista.innerHTML = '';
+        cats.forEach(function(c) {
+            lista.innerHTML += '<span class="badge">' + c.nombre + '</span> ';
+        });
+    }
+
     function pintarComentarios(comentarios) {
-        document.getElementById('titulo-comentarios').innerHTML = '<i class="fa-solid fa-comments"></i> Comentarios (' + comentarios.length + ')';
+        // 7.e: Título con número de comentarios [cite: 125]
+        document.getElementById('titulo-comentarios').innerHTML = 'Comentarios (' + comentarios.length + ')';
         var lista = document.getElementById('contenedor-lista-comentarios');
         lista.innerHTML = '';
-        
         comentarios.forEach(function(c) {
-            var estrellas = '';
-            for(var i=0; i<5; i++) estrellas += (i < c.valoracion) ? '<i class="fa-solid fa-star" style="color:#f1c40f"></i>' : '<i class="fa-regular fa-star" style="color:#ccc"></i>';
-            
+            var estrellas = '★'.repeat(c.valoracion) + '☆'.repeat(5 - c.valoracion);
             lista.innerHTML += 
-                '<article class="comment-card-styled">' +
-                    '<div class="comment-header">' +
-                        '<img src="./fotos/usuarios/' + c.foto_autor + '" class="comment-avatar">' +
-                        '<div>' +
-                            '<strong>' + c.login + '</strong>' +
-                            '<span class="comment-date">' + c.fecha_hora + '</span>' +
-                        '</div>' +
-                        '<div class="comment-stars">' + estrellas + '</div>' +
-                    '</div>' +
-                    '<p class="comment-body">' + c.texto + '</p>' +
-                '</article>';
+                '<div class="comment-item">' +
+                    '<strong>' + c.login + '</strong> <small>(' + formatearFecha(c.fecha_hora) + ')</small>' +
+                    '<p>' + c.texto + '</p>' +
+                    '<p style="color:orange">' + estrellas + '</p>' +
+                '</div>';
         });
     }
 
     function gestionarFormularioComentario() {
-        var contenedor = document.getElementById('contenedor-interaccion-usuario');
+        var div = document.getElementById('contenedor-interaccion-usuario');
         if (!token) {
-            contenedor.innerHTML = '<div class="login-box-detail">Para participar, <a href="login.html">inicia sesión aquí</a></div>';
-            return;
+            // 7.f: Usuario no logueado [cite: 128, 129]
+            div.innerHTML = '<p>Para dejar un comentario debes <a href="login.html">hacer login</a>.</p>';
+        } else {
+            // 7.f: Usuario logueado (Carga de HTML externo) [cite: 130, 131]
+            fetch('comentario_form.html')
+                .then(function(r) { return r.text(); })
+                .then(function(html) {
+                    div.innerHTML = html;
+                    document.getElementById('form-comentario').onsubmit = enviarComentario;
+                });
         }
-
-        contenedor.innerHTML = 
-            '<form id="form-comentario" class="styled-form">' +
-                '<h3>¿Qué te ha parecido?</h3>' +
-                '<textarea name="texto" required placeholder="Comparte tu experiencia..."></textarea>' +
-                '<div class="form-row">' +
-                    '<div class="rating-select">' +
-                        '<label>Tu nota:</label>' +
-                        '<select name="valoracion">' +
-                            '<option value="5">★★★★★ Excelente</option>' +
-                            '<option value="4">★★★★☆ Muy buena</option>' +
-                            '<option value="3">★★★☆☆ Normal</option>' +
-                            '<option value="2">★★☆☆☆ Mala</option>' +
-                            '<option value="1">★☆☆☆☆ Muy mala</option>' +
-                        '</select>' +
-                    '</div>' +
-                    '<button type="submit" class="btn-submit">Publicar ahora</button>' +
-                '</div>' +
-            '</form>';
-
-        document.getElementById('form-comentario').onsubmit = enviarComentario;
     }
 
     function enviarComentario(e) {
         e.preventDefault();
         var fd = new FormData(e.target);
+        // 7.g: Guardar comentario con cabecera Authorization [cite: 134]
         fetch('api/actividades/' + idActividad + '/comentarios', {
             method: 'POST',
             headers: { 'Authorization': 'Bearer ' + token },
@@ -136,10 +132,18 @@ window.onload = function() {
         .then(function(data) {
             if (data.RESULTADO === 'OK') {
                 e.target.reset();
+                // 7.g.ii: Actualizar sin recargar [cite: 136]
                 fetch('api/actividades/' + idActividad + '/comentarios')
                     .then(function(r) { return r.json(); })
                     .then(function(d) { pintarComentarios(d.FILAS); });
             }
         });
+    }
+
+    function formatearFecha(f) {
+        // Formato: "8 de febrero de 2026, 12:45" [cite: 124]
+        var d = new Date(f);
+        var meses = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"];
+        return d.getDate() + " de " + meses[d.getMonth()] + " de " + d.getFullYear() + ", " + d.getHours() + ":" + (d.getMinutes() < 10 ? '0' : '') + d.getMinutes();
     }
 };
