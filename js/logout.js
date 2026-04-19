@@ -1,25 +1,46 @@
-    // 1. Buscamos el enlace de Logout por su texto o atributo href
-    // En tu menú actual, el href apunta a "index.html", vamos a interceptarlo.
-    const menuLinks = document.querySelectorAll('.main-nav a');
-    let logoutLink = null;
+// 1. FUNCIÓN DE SALIDA BLINDADA (Debe ser global)
+window.forzarSalida = function() {
+    // Aniquilación absoluta de los datos de sesión
+    sessionStorage.clear();
+    localStorage.clear();
+    
+    // Redirección dura
+    window.location.replace('index.html');
+};
 
-    // Buscamos cuál de los enlaces contiene la palabra "Logout"
-    for (let link of menuLinks) {
-        if (link.textContent.trim() === 'Logout') {
-            logoutLink = link;
-            break;
-        }
+// 2. RENDERIZADO DEL MENÚ
+function construirMenu() {
+    let token = sessionStorage.getItem('token') || localStorage.getItem('token');
+
+    // Destrucción de tokens basura
+    if (token === 'null' || token === 'undefined' || token === '') {
+        token = null;
     }
 
-    if (logoutLink) {
-        logoutLink.addEventListener('click', (e) => {
-            e.preventDefault(); // Evitamos que siga el enlace normal
+    const menuUl = document.querySelector('.main-nav ul');
+    if (!menuUl) return;
 
-            // 2. Limpiamos ambos almacenamientos (por si acaso)
-            sessionStorage.clear();
-            localStorage.clear();
-
-            // 3. Redirigimos a la página de inicio
-            window.location.href = 'index.html';
-        });
+    if (!token) {
+        // ESTADO: DESCONECTADO
+        menuUl.innerHTML = `
+            <li><a href="index.html"><i class="fa-solid fa-house"></i> Inicio</a></li>
+            <li><a href="buscar.html"><i class="fa-solid fa-magnifying-glass"></i> Buscar</a></li>
+            <li><a href="login.html"><i class="fa-solid fa-user"></i> Login</a></li>
+            <li><a href="registrar.html"><i class="fa-solid fa-user-plus"></i> Crear cuenta</a></li>
+        `;
+    } else {
+        // ESTADO: CONECTADO
+        const nombre = sessionStorage.getItem('usuario') || 'Usuario';
+        
+        // Fíjate en el href y el onclick. Es imposible que el navegador lo ignore.
+        menuUl.innerHTML = `
+            <li><a href="index.html"><i class="fa-solid fa-house"></i> Inicio</a></li>
+            <li><a href="buscar.html"><i class="fa-solid fa-magnifying-glass"></i> Buscar</a></li>
+            <li><a href="nueva.html"><i class="fa-solid fa-plus"></i> Nueva</a></li>
+            <li><a href="#" onclick="forzarSalida(); return false;"><i class="fa-solid fa-right-from-bracket"></i> Logout (${nombre})</a></li>
+        `;
     }
+}
+
+// Ejecución inmediata
+construirMenu();

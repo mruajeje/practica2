@@ -93,8 +93,10 @@ window.onload = async () => {
         const fd = new FormData(e.target);
         // Añadir arrays según Punto 182, 189, 190
         categorias.forEach(c => fd.append('categorias[]', c));
-        fotosSeleccionadas.forEach(f => {
-            fd.append('fotos[]', f.archivo);
+        // Busca este bloque y cámbialo por este para asegurar el envío del fichero
+        fotosSeleccionadas.forEach((f, index) => {
+            // Añadimos el tercer parámetro (f.archivo.name) para que PHP lo reconozca como FILE
+            fd.append('fotos[]', f.archivo, f.archivo.name); 
             fd.append('descripciones[]', f.desc);
         });
 
